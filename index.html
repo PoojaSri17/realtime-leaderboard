@@ -1,13 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Leaderboard Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Real-Time Leaderboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 2rem;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #2c3e50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    #output {
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
-  <h2>Leaderboard Tester</h2>
+  <h2>🎮 Real-Time Leaderboard</h2>
 
-  <button onclick="updateScore()">Update Score</button>
+  <button onclick="updateScore()">Update Random Score</button>
   <button onclick="getTopPlayers()">Get Top Players</button>
+
+  <div id="output">No data yet.</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -30,12 +92,41 @@
         gameMode: "Solo",
         limit: 5
       });
-
-      socket.on("topPlayers", data => {
-        console.log("Top Players:", data);
-        alert("Top Players:\n" + JSON.stringify(data, null, 2));
-      });
     }
+
+    socket.on("leaderboardUpdate", (data) => {
+      const output = document.getElementById("output");
+
+      if (!data.length) {
+        output.innerHTML = "<p>No players found.</p>";
+        return;
+      }
+
+      output.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player ID</th>
+              <th>Score</th>
+              <th>Region</th>
+              <th>Game Mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map((player, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${player.playerId}</td>
+                <td>${player.score}</td>
+                <td>${player.region}</td>
+                <td>${player.gameMode}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    });
   </script>
 </body>
 </html>
