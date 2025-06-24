@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard Test</title>
+</head>
+<body>
+  <h2>Leaderboard Tester</h2>
+
+  <button onclick="updateScore()">Update Score</button>
+  <button onclick="getTopPlayers()">Get Top Players</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+
+    function updateScore() {
+      socket.emit("updateScore", {
+        playerId: "pooja123",
+        name: "Pooja Sri",
+        region: "South",
+        gameMode: "Solo",
+        score: Math.floor(Math.random() * 100)
+      });
+      console.log("Score update sent");
+    }
+
+    function getTopPlayers() {
+      socket.emit("getTopPlayers", {
+        region: "South",
+        gameMode: "Solo",
+        limit: 5
+      });
+
+      socket.on("topPlayers", data => {
+        console.log("Top Players:", data);
+        alert("Top Players:\n" + JSON.stringify(data, null, 2));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>Leaderboard Console</h2>
+  <script>
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      console.log('Connected');
+
+      socket.emit('updateScore', {
+        playerId: "pooja123",
+        score: 2000,
+        region: "asia",
+        gameMode: "solo"
+      });
+
+      socket.emit('getTopPlayers', {
+        region: "asia",
+        gameMode: "solo",
+        limit: 5
+      });
+    });
+
+    socket.on('leaderboardUpdate', (data) => {
+      console.log("Top Players:", data);
+    });
+  </script>
+</body>
+</html>
